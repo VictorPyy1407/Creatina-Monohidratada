@@ -299,6 +299,18 @@ function initForms() {
     quantitySelect?.addEventListener('change', () => window.Tracking?.fire('select_item', getTrackingPayload()));
     setDeliveryNoticeText(form);
 
+    // Form start tracking - track when user focuses on any form field
+    let formStarted = false;
+    const inputs = form.querySelectorAll('input, select, textarea');
+    inputs.forEach((input) => {
+      input.addEventListener('focus', () => {
+        if (!formStarted) {
+          formStarted = true;
+          window.Tracking?.fire('form_start', getTrackingPayload());
+        }
+      }, { once: true });
+    });
+
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
       const formData = new FormData(form);
@@ -332,6 +344,7 @@ function initForms() {
         window.Tracking?.fire('Purchase', payload);
         window.Tracking?.fire('generate_lead', payload);
         window.Tracking?.fire('Lead', payload);
+        window.Tracking?.fire('form_complete', payload);
       } catch (err) {
         console.error(err);
         if (error) error.textContent = 'No pudimos registrar tu pedido. Revisá tu conexión e intentá nuevamente. No se realizó ningún cobro.';
