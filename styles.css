@@ -292,3 +292,4 @@ body.checkout-open .float-cta { display: none; }
   *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .001ms !important; }
   .fade-up, .fade-left, .fade-right, .zoom-in, .slide-up, .smooth-reveal { opacity: 1; transform: none; filter: none; }
 }
+
