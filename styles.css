@@ -263,6 +263,10 @@ body.checkout-open .float-cta { display: none; }
   .timer { margin-left: 0; }
   h1 { font-size: clamp(28px, 8.2vw, 38px); overflow-wrap: anywhere; }
   .quick-benefits, .actions { grid-template-columns: 1fr; }
+  .actions { width: 100%; margin: 20px 0 16px; }
+  .primary-cta { width: 100%; min-height: 64px; padding: 12px 16px; border-radius: 16px; text-align: center; line-height: 1.12; }
+  .primary-cta span { display: block; width: 100%; }
+  .primary-cta small { margin-top: 5px; font-size: 12px; line-height: 1.2; }
   .price { font-size: 32px; }
   .benefits, .comparison, .how-section, .ideal-section, .ingredients-section, .testimonials, .guarantees, .faq-section, .cta-section { padding: 52px 14px; }
   .detail-item, .order-summary div { grid-template-columns: 1fr; }
@@ -271,7 +275,8 @@ body.checkout-open .float-cta { display: none; }
   .checkout-shell { padding: 18px; border-radius: 22px; }
   .map-input-row, .map-search, .map-link-row { grid-template-columns: 1fr; display: grid; }
   .map-picker { height: 310px; }
-  .float-cta { display: flex; flex-direction: column; gap: 0; }
+  .float-cta { display: flex; flex-direction: column; gap: 2px; min-height: 58px; padding: 8px 12px; text-align: center; line-height: 1.1; }
+  .float-cta small { font-size: 11px; }
   .cta-card { text-align: center; border-radius: 24px; }
   .cta-card h2, .cta-card p { max-width: none; }
   .cta-bottom { display: grid; justify-items: center; }
