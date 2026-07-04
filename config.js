@@ -9,7 +9,7 @@ window.APP_CONFIG = {
   META_PIXEL_ID: '2412226475899711',
   SUPABASE_URL: 'https://roruinqorwgolcrhhmpm.supabase.co',
   SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJvcnVpbnFvcndnb2xjcmhobXBtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI2NTU0MDcsImV4cCI6MjA5ODIzMTQwN30.VzNSqYUM6amTOToZUsJ7Emjapy-y9Y44hDmbC1XG9Eg',
-  SUPABASE_TABLE: 'cleanpro',
+  SUPABASE_TABLE: 'pedidos_web',
   ORIGIN: 'landing_creatina_monohidratada_gecaps_300g',
   WHATSAPP_NUMBER: '595972738779',
   WHATSAPP_MESSAGE: 'Hola! Me interesa la Creatina Monohidratada GECAPS 300g',
