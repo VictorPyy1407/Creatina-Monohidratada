@@ -69,16 +69,10 @@
         select_item: () => fireOnce('ga4:select_item', () => trackGA('select_item', payload)),
         add_to_cart: () => fireOnce('ga4:add_to_cart', () => trackGA('add_to_cart', payload)),
         begin_checkout: () => fireOnce('ga4:begin_checkout', () => trackGA('begin_checkout', payload)),
-        purchase: () => fireOnce('ga4:purchase', () => trackGA('purchase', payload)),
         generate_lead: () => fireOnce('ga4:generate_lead', () => trackGA('generate_lead', payload)),
-        form_start: () => fireOnce('ga4:form_start', () => trackGA('form_start', payload)),
-        form_complete: () => fireOnce('ga4:form_complete', () => trackGA('form_complete', payload)),
         AddToCart: () => fireOnce('meta:AddToCart', () => trackMeta('AddToCart', payload)),
         InitiateCheckout: () => fireOnce('meta:InitiateCheckout', () => trackMeta('InitiateCheckout', payload)),
-        Purchase: () => fireOnce('meta:Purchase', () => trackMeta('Purchase', payload)),
-        Lead: () => fireOnce('meta:Lead', () => trackMeta('Lead', payload)),
-        FormStart: () => fireOnce('meta:FormStart', () => trackMeta('FormStart', payload)),
-        FormComplete: () => fireOnce('meta:FormComplete', () => trackMeta('FormComplete', payload))
+        Lead: () => fireOnce('meta:Lead', () => trackMeta('Lead', payload))
       };
       if (events[name]) events[name]();
     },
