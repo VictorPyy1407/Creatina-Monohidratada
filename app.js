@@ -45,10 +45,10 @@ function setDeliveryNoticeText(form) {
   if (!city || !notice) return;
   const value = city.value.trim();
   if (!value) {
-    notice.textContent = 'Asunción y Central: pago contra entrega. Interior: se coordina por WhatsApp y se abona antes del despacho.';
+    notice.textContent = 'Asunción y Central: pago contra entrega. Interior: te contactamos para coordinar el abono antes del despacho.';
     return;
   }
-  notice.textContent = isCashOnDeliveryArea(value) ? 'Zona habilitada para pago contra entrega. No abonás nada ahora.' : 'Envíos al interior: coordinamos por WhatsApp y se abona antes de realizar el despacho.';
+  notice.textContent = isCashOnDeliveryArea(value) ? 'Zona habilitada para pago contra entrega. No abonás nada ahora.' : 'Envíos al interior: te contactamos para coordinar el abono antes de realizar el despacho.';
 }
 
 function updateOrderSummary() {
@@ -115,39 +115,6 @@ function initGallery() {
   }, { passive: true });
 
   restartAutoSlide();
-}
-
-function initTimer() {
-  const minutesEl = document.querySelector('#minutes');
-  const secondsEl = document.querySelector('#seconds');
-  const mobileMinutesEl = document.querySelector('#mobileMinutes');
-  const mobileSecondsEl = document.querySelector('#mobileSeconds');
-  let remaining = 10 * 60;
-  function updateTimer() {
-    const minutes = Math.floor(remaining / 60);
-    const seconds = remaining % 60;
-    const minutesText = String(minutes).padStart(2, '0');
-    const secondsText = String(seconds).padStart(2, '0');
-    if (minutesEl) minutesEl.textContent = minutesText;
-    if (secondsEl) secondsEl.textContent = secondsText;
-    if (mobileMinutesEl) mobileMinutesEl.textContent = minutesText;
-    if (mobileSecondsEl) mobileSecondsEl.textContent = secondsText;
-    remaining = remaining > 0 ? remaining - 1 : 10 * 60;
-  }
-  updateTimer();
-  setInterval(updateTimer, 1000);
-}
-
-function initLiveCounters() {
-  const viewerCount = document.querySelector('#viewerCount');
-  const stockCount = document.querySelector('#stockCount');
-  setInterval(() => {
-    if (viewerCount) viewerCount.textContent = String(Math.floor(Math.random() * 18) + 14);
-    if (stockCount && Math.random() > 0.78) {
-      const current = Number(stockCount.textContent) || 24;
-      if (current > 6) stockCount.textContent = String(current - 1);
-    }
-  }, 6500);
 }
 
 function showCheckout() {
@@ -220,39 +187,12 @@ function cleanReferenceNote(value, departamento, city) {
 
 function buildSupabaseOrder(formData, orderId, paymentMode) {
   const quantity = Number(formData.get('quantity') || 1);
-  const departamento = String(formData.get('departamento') || '').trim();
   const city = String(formData.get('city') || '').trim();
-  const notes = cleanReferenceNote(formData.get('notes'), departamento, city);
+  const notes = cleanReferenceNote(formData.get('notes'), '', city);
   const mapUrl = String(formData.get('map') || '').trim();
-  const ci = String(formData.get('ci') || '').trim();
   const referenceParts = [];
   if (notes) referenceParts.push(`Referencia: ${notes}`);
-  if (ci) referenceParts.push(`CI: ${ci}`);
-  if (mapUrl) referenceParts.push(`Maps: ${mapUrl}`);
-  referenceParts.push(paymentMode === 'cash_on_delivery' ? 'Pago contra entrega' : 'Interior: abono previo antes del despacho');
-  return {
-    id: orderId,
-    product: config.PRODUCT_NAME,
-    combo: `${getQuantityText(quantity)} | ${config.PRODUCT_NAME}`,
-    quantity: quantity,
-    total: getSubtotal(quantity),
-    customer_name: String(formData.get('name') || '').trim(),
-    customer_phone: String(formData.get('phone') || '').trim(),
-    city: city,
-    address: String(formData.get('address') || '').trim() || 'No informado',
-    neighborhood: departamento || 'No informado',
-    reference: referenceParts.join(' | '),
-    maps_url: mapUrl,
-    status: 'pending_confirmation',
-    created_at: new Date().toISOString()
-  };
-}
-
-function buildLocalOrder(formData, orderId) {
-  const quantity = Number(formData.get('quantity') || 1);
-  const departamento = String(formData.get('departamento') || '').trim();
-  const city = String(formData.get('city') || '').trim();
-  const notes = cleanReferenceNote(formData.get('notes'), departamento, city);
+  referenceParts.push(paymentMode === 'cash_on_delivery' ? 'Pago contra entrega' : 'Interior: coordinar abono previo antes del despacho');
   return {
     id: orderId,
     producto: config.PRODUCT_NAME,
@@ -262,13 +202,39 @@ function buildLocalOrder(formData, orderId) {
     nombre: String(formData.get('name') || '').trim(),
     telefono: String(formData.get('phone') || '').trim(),
     correo: 'No informado',
-    ci: String(formData.get('ci') || '').trim() || 'No informado',
-    departamento: departamento || 'No informado',
+    ci: 'No informado',
+    departamento: paymentMode === 'cash_on_delivery' ? 'Asunción/Central' : 'Interior',
+    ciudad: city,
+    direccion: String(formData.get('address') || '').trim() || 'No informado',
+    referencia: referenceParts.join(' | '),
+    ubicacion_maps: mapUrl || 'No informado',
+    estado: 'Pendiente',
+    origen: config.ORIGIN,
+    created_at: new Date().toISOString()
+  };
+}
+
+function buildLocalOrder(formData, orderId) {
+  const quantity = Number(formData.get('quantity') || 1);
+  const city = String(formData.get('city') || '').trim();
+  const notes = cleanReferenceNote(formData.get('notes'), '', city);
+  return {
+    id: orderId,
+    producto: config.PRODUCT_NAME,
+    precio: config.PRODUCT_PRICE,
+    cantidad: quantity,
+    subtotal: getSubtotal(quantity),
+    nombre: String(formData.get('name') || '').trim(),
+    telefono: String(formData.get('phone') || '').trim(),
+    correo: 'No informado',
+    ci: 'No informado',
+    departamento: 'No informado',
     ciudad: city,
     direccion: String(formData.get('address') || '').trim() || 'No informado',
     referencia: notes || 'Sin referencia',
     ubicacion_maps: String(formData.get('map') || '').trim() || 'No informado',
-    estado: 'pending_confirmation',
+    estado: 'Pendiente',
+    origen: config.ORIGIN,
     created_at: new Date().toISOString()
   };
 }
@@ -299,18 +265,6 @@ function initForms() {
     quantitySelect?.addEventListener('change', () => window.Tracking?.fire('select_item', getTrackingPayload()));
     setDeliveryNoticeText(form);
 
-    // Form start tracking - track when user focuses on any form field
-    let formStarted = false;
-    const inputs = form.querySelectorAll('input, select, textarea');
-    inputs.forEach((input) => {
-      input.addEventListener('focus', () => {
-        if (!formStarted) {
-          formStarted = true;
-          window.Tracking?.fire('form_start', getTrackingPayload());
-        }
-      }, { once: true });
-    });
-
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
       const formData = new FormData(form);
@@ -340,11 +294,8 @@ function initForms() {
       try {
         await window.SupabaseOrders.save(supabaseOrder);
         saveLocalBackup(localOrder);
-        window.Tracking?.fire('purchase', payload);
-        window.Tracking?.fire('Purchase', payload);
         window.Tracking?.fire('generate_lead', payload);
         window.Tracking?.fire('Lead', payload);
-        window.Tracking?.fire('form_complete', payload);
       } catch (err) {
         console.error(err);
         if (error) error.textContent = 'No pudimos registrar tu pedido. Revisá tu conexión e intentá nuevamente. No se realizó ningún cobro.';
@@ -443,10 +394,8 @@ function initAnimations() {
   animated.forEach((el) => observer.observe(el));
 }
 
-initGallery();
-initTimer();
-initLiveCounters();
 initCheckout();
+initGallery();
 initForms();
 initMapPicker();
 initAnimations();
