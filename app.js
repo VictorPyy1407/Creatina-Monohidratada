@@ -294,8 +294,11 @@ function initForms() {
       try {
         await window.SupabaseOrders.save(supabaseOrder);
         saveLocalBackup(localOrder);
-        window.Tracking?.fire('generate_lead', payload);
-        window.Tracking?.fire('Lead', payload);
+        const conversionPayload = { ...payload, orderId };
+        window.Tracking?.fire('generate_lead', conversionPayload);
+        window.Tracking?.fire('purchase', conversionPayload);
+        window.Tracking?.fire('Lead', conversionPayload);
+        window.Tracking?.fire('Purchase', conversionPayload);
       } catch (err) {
         console.error(err);
         if (error) error.textContent = 'No pudimos registrar tu pedido. Revisá tu conexión e intentá nuevamente. No se realizó ningún cobro.';
